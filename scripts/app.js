@@ -10,6 +10,7 @@ function addContainerListeners(currentContainer) {
     addItemBtnListener(currentAddItemBtn);
     closingFormBtnListener(currentCloseFormBtn);
     addFormSubmitListener(currentForm);
+    addDDListener(currentContainer);
 }
 itemsContainer.forEach((container) => {
     addContainerListeners(container);
@@ -25,6 +26,12 @@ function addItemBtnListener(btn) {
 }
 function closingFormBtnListener(btn) {
     btn.addEventListener('click', () => toggleForm(actualBtn, actualForm, false));
+}
+function addDDListener(element) {
+    element.addEventListener('dragstart', handleDragStart);
+    element.addEventListener('dragstart', handleDragOver);
+    element.addEventListener('dragstart', handleDragDrop);
+    element.addEventListener('dragstart', handleDragEnd);
 }
 function handleContainerDeletion(e) {
     const btn = e.target;
@@ -80,6 +87,7 @@ function createNewItem(e) {
     const item = actualUl.lastElementChild;
     const liBtn = item.querySelector('button');
     handleItemDeletion(liBtn);
+    addDDListener(item);
     actualTextInput.value = "";
 }
 function handleItemDeletion(btn) {
@@ -87,6 +95,28 @@ function handleItemDeletion(btn) {
         const elToRemove = btn.parentElement;
         elToRemove.remove();
     });
+}
+// Drag and Drop
+let dragSrcEl;
+function handleDragStart(e) {
+    var _a;
+    e.stopPropagation();
+    if (actualContainer)
+        toggleForm(actualBtn, actualForm, false);
+    dragSrcEl = this;
+    (_a = e.dataTransfer) === null || _a === void 0 ? void 0 : _a.setData('text/html', this.innerHTML);
+}
+function handleDragOver(e) {
+    e.preventDefault();
+}
+function handleDragDrop(e) {
+    e.stopPropagation;
+    const receptionEl = this;
+    if (dragSrcEl.nodeName === "LI" && receptionEl.classList.contains("items-container")) {
+        receptionEl.querySelector('ul').appendChild(dragSrcEl);
+        addDDListener(dragSrcEl);
+        handleItemDeletion(dragSrcEl.querySelector('button'));
+    }
 }
 // Add new container
 const addContainerBtn = document.querySelector('.add-container-btn');

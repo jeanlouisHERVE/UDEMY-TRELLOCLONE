@@ -17,6 +17,7 @@ function addContainerListeners(currentContainer : HTMLDivElement) {
   addItemBtnListener(currentAddItemBtn);
   closingFormBtnListener(currentCloseFormBtn);
   addFormSubmitListener(currentForm)
+  addDDListener(currentContainer)
 }
 
 
@@ -40,6 +41,13 @@ function addItemBtnListener(btn: HTMLButtonElement) {
 
 function closingFormBtnListener(btn: HTMLButtonElement) {
   btn.addEventListener('click', () => toggleForm(actualBtn, actualForm, false))
+}
+
+function addDDListener(element: HTMLElement) {
+  element.addEventListener('dragstart', handleDragStart);
+  element.addEventListener('dragstart', handleDragOver);
+  element.addEventListener('dragstart', handleDragDrop);
+  element.addEventListener('dragstart', handleDragEnd)
 }
 
 function handleContainerDeletion(e: MouseEvent){
@@ -96,6 +104,7 @@ function createNewItem(e: Event) {
   const item = actualUl.lastElementChild as HTMLLIElement;
   const liBtn = item.querySelector('button') as HTMLButtonElement;
   handleItemDeletion(liBtn);
+  addDDListener(item)
   actualTextInput.value = "";
 }
 
@@ -106,7 +115,34 @@ function handleItemDeletion(btn: HTMLButtonElement) {
   })
 }
 
+// Drag and Drop
+
+let dragSrcEl: HTMLElement;
+function handleDragStart(this: HTMLElement, e: DragEvent) {
+  e.stopPropagation()
+
+  if(actualContainer) toggleForm(actualBtn, actualForm, false);
+  dragSrcEl = this;
+  e.dataTransfer?.setData('text/html', this.innerHTML)
+}
+
+function handleDragOver(e: DragEvent) {
+  e.preventDefault();
+}
+
+function handleDragDrop(this: HTMLElement, e: DragEvent) {
+  e.stopPropagation;
+  const receptionEl = this;
+
+  if(dragSrcEl.nodeName === "LI" && receptionEl.classList.contains("items-container")) {
+    (receptionEl.querySelector('ul') as HTMLUListElement).appendChild(dragSrcEl);
+    addDDListener(dragSrcEl)
+    handleItemDeletion(dragSrcEl.querySelector('button') as HTMLButtonElement)
+  }
+}
+
 // Add new container
+
 const addContainerBtn = document.querySelector('.add-container-btn') as HTMLButtonElement;
 const addContainerForm = document.querySelector('.add-new-container form') as HTMLFormElement;
 const addContainerFormInput = document.querySelector('.add-new-container input') as HTMLInputElement;
