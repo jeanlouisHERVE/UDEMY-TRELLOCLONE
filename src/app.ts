@@ -105,3 +105,56 @@ function handleItemDeletion(btn: HTMLButtonElement) {
     elToRemove.remove();
   })
 }
+
+// Add new container
+const addContainerBtn = document.querySelector('.add-container-btn') as HTMLButtonElement;
+const addContainerForm = document.querySelector('.add-new-container form') as HTMLFormElement;
+const addContainerFormInput = document.querySelector('.add-new-container input') as HTMLInputElement;
+const validationNewContainer = document.querySelector('.add-new-container .validation-msg') as HTMLSpanElement;
+const addContainerCloseBtn = document.querySelector('.close-add-list') as HTMLButtonElement;
+const addNewContainer = document.querySelector('.add-new-container') as HTMLDivElement;
+const containerList = document.querySelector('.main-content') as HTMLDivElement; 
+
+addContainerBtn.addEventListener('click', () => {
+  toggleForm(addContainerBtn, addContainerForm, true)
+})
+
+addContainerCloseBtn.addEventListener('click', () => {
+  toggleForm(addContainerBtn, addContainerForm, false)
+})
+
+addContainerForm.addEventListener('submit', createNewContainer)
+
+function createNewContainer(e: Event) {
+  e.preventDefault()
+  //validation
+  if(addContainerFormInput.value.length === 0) {
+    validationNewContainer.textContent = "Must be at least 1 character long"
+    return;
+  } else {
+    validationNewContainer.textContent = " ";
+  }
+  //creation
+  const itemContainer = document.querySelector(".items-container") as HTMLDivElement;
+  const newContainer = itemContainer.cloneNode() as HTMLDivElement;
+  const newContainerContent=`
+  <div class="top-container">
+    <h2>${addContainerFormInput.value}</h2>
+    <button class="delete-container-btn">X</button>
+  </div>
+    <ul></ul>
+    <button class="add-item-btn">Add an Item</button>
+    <form autocomplete="off">
+      <div class="top-form-container">
+        <label for="item">Add a new item</label>
+        <button class="close-form-btn">X</button>
+      </div>
+      <input type="text" id="item2">
+      <span class="validation-msg"></span>
+      <button type="submit">Submit</button>
+    </form>`
+  newContainer.innerHTML = newContainerContent;
+  containerList.insertBefore(newContainer, addNewContainer);
+  addContainerFormInput.value= "";
+  addContainerListeners(newContainer);
+}
