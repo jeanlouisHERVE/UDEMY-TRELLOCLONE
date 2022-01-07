@@ -20,8 +20,6 @@ function addContainerListeners(currentContainer : HTMLDivElement) {
   addDDListener(currentContainer)
 }
 
-
-
 itemsContainer.forEach((container: HTMLDivElement) => {
   addContainerListeners(container);
 });
@@ -45,9 +43,9 @@ function closingFormBtnListener(btn: HTMLButtonElement) {
 
 function addDDListener(element: HTMLElement) {
   element.addEventListener('dragstart', handleDragStart);
-  element.addEventListener('dragstart', handleDragOver);
-  element.addEventListener('dragstart', handleDragDrop);
-  element.addEventListener('dragstart', handleDragEnd)
+  element.addEventListener('dragover', handleDragOver);
+  element.addEventListener('drop', handleDrop);
+  element.addEventListener('dragend', handleDragEnd)
 }
 
 function handleContainerDeletion(e: MouseEvent){
@@ -121,7 +119,7 @@ let dragSrcEl: HTMLElement;
 function handleDragStart(this: HTMLElement, e: DragEvent) {
   e.stopPropagation()
 
-  if(actualContainer) toggleForm(actualBtn, actualForm, false);
+  if(actualContainer) {toggleForm(actualBtn, actualForm, false)};
   dragSrcEl = this;
   e.dataTransfer?.setData('text/html', this.innerHTML)
 }
@@ -130,7 +128,7 @@ function handleDragOver(e: DragEvent) {
   e.preventDefault();
 }
 
-function handleDragDrop(this: HTMLElement, e: DragEvent) {
+function handleDrop(this: HTMLElement, e: DragEvent) {
   e.stopPropagation;
   const receptionEl = this;
 
@@ -138,6 +136,35 @@ function handleDragDrop(this: HTMLElement, e: DragEvent) {
     (receptionEl.querySelector('ul') as HTMLUListElement).appendChild(dragSrcEl);
     addDDListener(dragSrcEl)
     handleItemDeletion(dragSrcEl.querySelector('button') as HTMLButtonElement)
+  }
+
+  if(dragSrcEl !== this && this.classList[0] === dragSrcEl.classList[0]) {
+    dragSrcEl.innerHTML = this.innerHTML; 
+    this.innerHTML = e.dataTransfer?.getData('text/html') as string;
+    if(this.classList.contains("items-container")) {
+      addContainerListeners(this as HTMLDivElement)
+
+      this.querySelectorAll('li').forEach((li: HTMLLIElement) => {
+        handleItemDeletion(li.querySelector('button') as HTMLButtonElement)
+        addDDListener(li); 
+      })
+    } else {
+      addDDListener(this)
+      handleItemDeletion(this.querySelector("button") as HTMLButtonElement)
+    }
+  }
+}
+
+function handleDragEnd(this: HTMLElement, e: DragEvent){
+  e.stopPropagation;
+  if(this.classList.contains('item-container')) {
+    addContainerListeners(this as HTMLDivElement)
+    this.querySelectorAll('li').forEach((li: HTMLLIElement) => {
+      handleItemDeletion(li.querySelector('button') as HTMLButtonElement)
+      addDDListener(li); 
+    })
+  } else {
+    addDDListener(this)
   }
 }
 
