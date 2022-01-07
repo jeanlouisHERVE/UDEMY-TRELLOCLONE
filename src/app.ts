@@ -20,3 +20,5 @@ function handleContainerDeletion(e: MouseEvent){
   const containers = [...document.querySelectorAll('.items-container')] as HTMLDivElement[];
   containers[btnsArray.indexOf(btn)].remove();
 }
+
+const zero = 0;

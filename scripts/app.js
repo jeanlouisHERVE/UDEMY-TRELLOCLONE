@@ -17,3 +17,4 @@ function handleContainerDeletion(e) {
     const containers = [...document.querySelectorAll('.items-container')];
     containers[btnsArray.indexOf(btn)].remove();
 }
+const zero = 0;
